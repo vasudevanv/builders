@@ -4,8 +4,8 @@ Compendia of bash scripts for compiling popular simulation/analysis
 codes (gromacs, lammps, ambertools, etc.). Scripts are provided for
 the following platforms:
 
-## Scientific Linux (_sl7)
-A ``workstation`` flavor of Scientific Linux 7 with the following 
+## CentOS (_centos7)
+A ``workstation`` flavor of CentOS 7 with the following 
 packages installed via yum
 * gcc-c++
 * gcc-gfortran
@@ -14,7 +14,7 @@ packages installed via yum
 * cmake
 * fftw
 * boost
-These scripts can easily be adapted to work with RHEL/CentOS/Fedora systems.
+These scripts can easily be adapted to work with RHEL/Scientific Linux/Fedora systems.
 
 ## Mac OS X el Capitan (_mac_elcapitan)
 Xcode with commandline tools and Homebrew are installed along with the
