@@ -19,7 +19,7 @@ src_dir=`pwd`
 gmx_version="4.0.7"
 
 # Installation directory
-install_dir=${working_dir}/gromacs-${gmx_version}
+install_dir=${HOME}/Applications/gromacs-${gmx_version}
 
 # Create a temporary build directory
 mkdir ${working_dir}/temp
