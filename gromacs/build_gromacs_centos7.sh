@@ -16,97 +16,50 @@
 # This script was last tested on Centos 7 with gromacs-5.1.4 and 
 # gromacs 4.0.7
 
-build3(){
-    if [ $1 == "MPI" ]
+build34(){
+    if [ $# -ne 0 ]
     then
+	if [ $1 == "MPI" ]
+	then
 	./configure --prefix=${install_dir} \
 	    --enable-float \
 	    --enable-mpi \
 	    --program-suffix="_sm" \
 	    --without-x
+	else
+	    echo 'Error: Unknown Argument'
+	    exit
+	fi
     else
-	# Set environment variables
-	export CC=/usr/local/bin/gcc-4.8
-	export CXX=/usr/local/bin/gcc-4.8 
-	export CPPFLAGS=-I/usr/local/include
-	export LDFLAGS=-L/usr/local/lib
-	
-	# Configure gromacs
-	./configure --prefix=${install_dir} \
-	    --disable-mpi \
-	    --program-suffix=_s \
-	    --without-x \
-	    --enable-static \
-	    --enable-float \
-	    --disable-ia32-sse \
-	    --disable-ia32-3dnow
-    fi
-}
-
-build4(){
-    if [ $1 == "MPI" ]
-    then
-	./configure --prefix=${install_dir} \
-	    --enable-float \
-	    --enable-mpi \
-	    --program-suffix="_sm" \
-	    --without-x
-    else
-	# Set environment variables
-	export CC=/usr/local/bin/gcc-4.8
-	export CXX=/usr/local/bin/gcc-4.8 
-	export CPPFLAGS=-I/usr/local/include
-	export LDFLAGS=-L/usr/local/lib
-	
 	# Make
 	./configure --prefix=${install_dir} \
 	    --disable-mpi \
 	    --program-suffix=_s \
 	    --without-x \
 	    --enable-static \
-	    --enable-float \
-	    --disable-ia32-sse \
-	    --disable-ia32-3dnow
+	    --enable-float 
     fi
 }
 
-build45(){
-    if [ $1 == "MPI" ]
-    then
-	cmake -DCMAKE_INSTALL_PREFIX=${install_dir} \
-	    -DGMX_DEFAULT_SUFFIX=OFF \
-	    -DGMX_BINARY_SUFFIX="_sm" \
-	    -DGMX_X11=OFF \
-	    -DGMX_MPI=ON \
-	    -DGMX_BUILD_MDRUN_ONLY=ON \
-	    -DCMAKE_CXX_COMPILER=mpicxx \
-	    -DCMAKE_C_COMPILER=mpicc \
-	    `pwd`
-    else
-	# Make
-	cmake -DCMAKE_INSTALL_PREFIX=${install_dir} \
-	    -DGMX_DEFAULT_SUFFIX=OFF \
-	    -DGMX_BINARY_SUFFIX="_s" \
-	    -DGMX_X11=OFF \
-	    -DGMX_MPI=OFF \
-	    -DCMAKE_CXX_COMPILER=/usr/local/bin/g++-4.8 \
-	    -DCMAKE_C_COMPILER=/usr/local/bin/gcc-4.8 \
-	    `pwd`
-    fi
-}
 
 build5(){
-    if [ $1 == "MPI" ]
+    if [ $# -ne 0 ]
     then
-	cmake -DCMAKE_INSTALL_PREFIX=${install_dir} \
-	    -DGMX_DEFAULT_SUFFIX=OFF \
-	    -DGMX_BINARY_SUFFIX="_sm" \
-	    -DGMX_X11=OFF \
-	    -DGMX_MPI=ON \
-	    -DGMX_BUILD_MDRUN_ONLY=ON \
-	    -DCMAKE_CXX_COMPILER=mpicxx \
-	    -DCMAKE_C_COMPILER=mpicc \
-	    `pwd`
+	if [ $1 == "MPI" ]
+	then
+	    cmake -DCMAKE_INSTALL_PREFIX=${install_dir} \
+		-DGMX_DEFAULT_SUFFIX=OFF \
+		-DGMX_BINARY_SUFFIX="_sm" \
+		-DGMX_X11=OFF \
+		-DGMX_MPI=ON \
+		-DGMX_BUILD_MDRUN_ONLY=ON \
+		-DCMAKE_CXX_COMPILER=mpicxx \
+		-DCMAKE_C_COMPILER=mpicc \
+		`pwd`
+	else
+	    echo 'Error: Unknown Argument'
+	    exit
+	fi
     else
 	# Build gromacs version 5
 	cmake -DCMAKE_INSTALL_PREFIX=${install_dir} \
@@ -194,9 +147,9 @@ cd ${temp_dir}/gromacs-${gmx_version}
 # Build gromacs
 build_version=`echo ${gmx_version} | sed "s/\./\ /" | awk '{print $1}'`
 case ${build_version} in
-    3) build3 ;;
-    4) build4 ;;
-    5) build5 ;;
+    3) build34 ;;
+    4) build34 ;;
+    5|2016) build5 ;;
 esac
 
 make -j4
@@ -211,16 +164,16 @@ cd gromacs-${gmx_version}
  
 case ${build_version} in
     3) 
-	build3 MPI 
+	build34 MPI 
 	make -j4
 	make install-mdrun
 	;;
     4) 
-	build4 MPI 
+	build34 MPI 
 	make -j4
 	make install-mdrun
 	;;
-    5) 
+    5|2016) 
 	build5 MPI 
 	make -j4
 	make install
