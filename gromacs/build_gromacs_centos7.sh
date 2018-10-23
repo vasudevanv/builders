@@ -82,9 +82,6 @@ src_dir=`pwd`
 # Version
 gmx_version="5.1.4"
  
-# Installation directory
-install_dir=${HOME}/Applications/gromacs-${gmx_version}
-
 
 # Parse arguments
 usage() {
@@ -92,6 +89,7 @@ usage() {
     echo "  version=  Version of gromacs you want to install"
     echo "  prefix=  Installation directory for gromacs"
     echo "  src=  Location of the gromacs source archive"
+    echo "  module=  Location of the gromacs modulefile"
     echo "Gromacs will be installed in gromacs-(version)"
     echo "within the installation directory. The default"
     echo "installation directory is ${HOME}/Applications"
@@ -117,6 +115,10 @@ do
 	    src_dir="${i#*=}"
 	    shift # past argument
 	    ;;
+	module=*)
+	    module_dir="${i#*=}"
+	    shift # past argument
+	    ;;
 	*)
 	    echo "Unknown option" # usage
 	    ;;
@@ -129,7 +131,8 @@ if [ ${has_version} -eq 0 ]; then
     usage
 fi
 
-install_dir=${install_dir}/gromacs-${gmx_version}
+# Installation directory
+install_dir=${HOME}/Applications/gromacs-${gmx_version}
 
 # Create a temporary build directory
 mkdir ${working_dir}/temp
@@ -183,3 +186,20 @@ esac
 # Cleanup
 cd ${working_dir}
 rm -rf ${temp_dir}
+
+if [ ! -z ${module_dir} ]
+then
+    echo "Creating module file"
+    # Write module file
+    cat <<EOF > ${module_dir}/gromacs-${gmx_version}
+module-whatis	 Name: Gromacs
+module-whatis	 Version: ${gmx_version}
+module-whatis	 Category: physics, molecular dynamics 
+module-whatis	 Description: Gromacs molecular dynamics simulation package 
+module-whatis	 URL: http://www.gromacs.org
+prepend-path	 PATH ${install_dir}/bin
+prepend-path	 MANPATH ${install_dir}/share/man 
+prepend-path	 LD_LIBRARY_PATH ${install_dir}/lib  
+EOF
+
+fi
