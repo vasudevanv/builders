@@ -190,8 +190,14 @@ rm -rf ${temp_dir}
 if [ ! -z ${module_dir} ]
 then
     echo "Creating module file"
+
     # Write module file
-    cat <<EOF > ${module_dir}/gromacs-${gmx_version}
+    if [ ! -d ${module_dir}/gromacs ]
+    then
+	mkdir -p ${module_dir}/gromacs
+    fi
+
+    cat <<EOF > ${module_dir}/gromacs/${gmx_version}
 #%Module
 ## Module to load gromacs into user PATH
 proc ModulesHelp { } {
