@@ -192,6 +192,13 @@ then
     echo "Creating module file"
     # Write module file
     cat <<EOF > ${module_dir}/gromacs-${gmx_version}
+#%Module
+## Module to load gromacs into user PATH
+proc ModulesHelp { } {
+
+        puts stderr "Loads the Gromacs MD package v ${gmx_version}"
+}
+
 module-whatis	 Name: Gromacs
 module-whatis	 Version: ${gmx_version}
 module-whatis	 Category: physics, molecular dynamics 
@@ -201,5 +208,4 @@ prepend-path	 PATH ${install_dir}/bin
 prepend-path	 MANPATH ${install_dir}/share/man 
 prepend-path	 LD_LIBRARY_PATH ${install_dir}/lib  
 EOF
-
 fi
