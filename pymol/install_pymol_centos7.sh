@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-# Script to install pymol on CentOS 7
+# Script to install pymol
 #
 # You will need to have the following packages installed
 # through yum

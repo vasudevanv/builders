@@ -1,6 +1,6 @@
 #!/bin/bash
  
-# Script to build gromacs-5.1.x
+# Script to build gromacs
 #
 # You will need to have the following packages installed
 # through yum
@@ -8,13 +8,14 @@
 #     gcc-c++
 #     gcc-gfortran
 #     fftw-devel
-#     openmpi-devel
+#     openmpi-devel (if installing MPI version)
 #
 # The script assumes that mpi is available as a module
 # which can be loaded using module load mpi/openmpi-x86_64
 #
-# This script was last tested on Centos 7 with gromacs-5.1.4 and 
-# gromacs 4.0.7
+# This script was last tested on OpenSUSE Tumbleweed March 2022 
+# with gromacs-4.0.7 and gromacs-2022
+
 
 build34(){
     if [ $# -ne 0 ]
@@ -98,6 +99,8 @@ usage() {
 
 # Parse arguments
 has_version=0
+has_prefix=0
+build_mpi=0
 
 for i in "$@" 
 do
@@ -105,18 +108,28 @@ do
 	version=*)
 	    has_version=1
 	    gmx_version="${i#*=}"
+	    echo "parsed version" ${gmx_version}
 	    shift # past argument
 	    ;;
 	prefix=*)
-	    install_dir="${i#*=}"
+	    echo "parsed prefix"
+	    install_dir=`readlink -f "${i#*=}"`
+	    has_prefix=1
 	    shift # past argument
 	    ;;
 	src=*)
-	    src_dir="${i#*=}"
+	    echo "parsed source"
+	    src_dir=`readlink -f "${i#*=}"`
 	    shift # past argument
 	    ;;
 	module=*)
-	    module_dir="${i#*=}"
+	    echo "parsed module"
+	    module_dir=`readlink -f "${i#*=}"`
+	    shift # past argument
+	    ;;
+	mpi)
+	    echo "parsed mpi"
+	    build_mpi=1
 	    shift # past argument
 	    ;;
 	*)
@@ -131,19 +144,25 @@ if [ ${has_version} -eq 0 ]; then
     usage
 fi
 
+
 # Installation directory
-install_dir=${HOME}/Applications/gromacs-${gmx_version}
+if [ ${has_prefix} -eq 0 ]; then
+    install_dir=${HOME}/Applications/gromacs-${gmx_version}
+else
+    install_dir=${install_dir}/gromacs-${gmx_version}
+fi
+
 
 # Create a temporary build directory
-mkdir ${working_dir}/temp
-temp_dir=${working_dir}/temp
-cd ${temp_dir}
-
 # Extract the source archive
-if [ -d ${temp_dir}/gromacs-${gmx_version} ]
+temp_dir=${working_dir}/temp
+
+if [ -d ${temp_dir} ]
 then
-    rm -rf ${temp_dir}/gromacs-${gmx_version}
+    rm -rf ${temp_dir}
 fi
+mkdir ${working_dir}/temp
+cd ${temp_dir}
 tar -xzf ${src_dir}/gromacs-${gmx_version}.tar.gz
 cd ${temp_dir}/gromacs-${gmx_version}
  
@@ -152,37 +171,40 @@ build_version=`echo ${gmx_version} | sed "s/\./\ /" | awk '{print $1}'`
 case ${build_version} in
     3) build34 ;;
     4) build34 ;;
-    5|2016) build5 ;;
+    5|2016|2022) build5 ;;
 esac
 
 make -j4
 make install
- 
-# Build the MPI version of mdrun
-module load mpi/openmpi-x86_64
-cd ${temp_dir}
-rm -rf gromacs-${gmx_version}
-tar -xzf ${src_dir}/gromacs-${gmx_version}.tar.gz
-cd gromacs-${gmx_version}
- 
-case ${build_version} in
-    3) 
-	build34 MPI 
-	make -j4
-	make install-mdrun
-	;;
-    4) 
-	build34 MPI 
-	make -j4
-	make install-mdrun
-	;;
-    5|2016) 
-	build5 MPI 
-	make -j4
-	make install
-	;;
-esac
 
+if [ ${build_mpi} -eq 1 ]; then
+ 
+    # Build the MPI version of mdrun
+    module load mpi/openmpi-x86_64
+    cd ${temp_dir}
+    rm -rf gromacs-${gmx_version}
+    tar -xzf ${src_dir}/gromacs-${gmx_version}.tar.gz
+    cd gromacs-${gmx_version}
+     
+    case ${build_version} in
+        3) 
+    	    build34 MPI 
+    	    make -j4
+    	    make install-mdrun
+    	    ;;
+        4) 
+    	    build34 MPI 
+    	    make -j4
+    	    make install-mdrun
+    	    ;;
+        5|2016|2022) 
+    	    build5 MPI 
+    	    make -j4
+    	    make install
+    	    ;;
+    esac
+fi
+    
 # Cleanup
 cd ${working_dir}
 rm -rf ${temp_dir}

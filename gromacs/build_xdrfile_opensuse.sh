@@ -3,17 +3,15 @@
 # Script to build xdrfile-1.1.x
 #
 # You will need to have the following packages installed
-# through yum
 #
 #     gcc-c++
 #     gcc-gfortran
 #     fftw-devel
-#     openmpi-devel
+#     openmpi-devel (if installing MPI version)
 #
-# The script assumes that mpi is available as a module
-# which can be loaded using module load mpi/openmpi-x86_64
 #
-# This script was tested on CentOS 7 with xdrfile-1.1.4
+# This script was tested on OpenSUSE Tumbleweed March 2022 
+# with xdrfile-1.1.4
 
 # Argument parsing
 die()
@@ -61,7 +59,7 @@ done
 working_dir=`pwd`
  
 # Gromacs source archive directory
-src_archive=${arg_src_archive}
+src_archive=`readlink -f ${arg_src_archive}`
 
 # Version
 xdr_version=${arg_version} 

@@ -1,9 +1,8 @@
 #!/bin/bash
 
-# Script to install vmd on CentOS 7
+# Script to install vmd
 #
 # You will need to have the following packages installed
-# through yum
 #
 #     gcc-c++
 #     gcc-gfortran
@@ -17,7 +16,8 @@
 #     fltk-devel 
 #     netcdf-devel
 #
-# This script was tested on CentOS 7 with -1.8.4.0
+# This script was tested on OpenSUSE Tumbleweed March 2022
+
 
 # Argument parsing
 die()

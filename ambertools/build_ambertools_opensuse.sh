@@ -1,9 +1,10 @@
 #!/bin/bash
 
-# Script to install Ambertools 16 on CentOS 7
-# The following packages need to be installed through yum
+# Script to install Ambertools 21 on OpenSUSE Tumbleweed
+# The following packages need to be installed
 #
 #     tcsh
+#     patch
 #     gcc-c++
 #     gcc-gfortran
 #     fftw-devel
@@ -12,8 +13,12 @@
 #     scipy
 #     matplotlib
 #     tkinter
+#     libXt-devel
+#     flex
+#     bison
+#     libbz2-devel
 #
-# The script was last tested with Ambertools16 and CentOS 7
+# The script was last tested with Ambertools16 and OpenSUSE Tumbleweed
 
 # Argument parsing
 die()
@@ -64,18 +69,18 @@ done
 working_dir=`pwd`
 
 # Pymol source archive directory
-src_archive=${arg_src_archive}
+src_archive=`readlink -f ${arg_src_archive}`
 
 # Version
-amb_version=${arg_version} 
+amb_version=$(expr ${arg_version} - 1)
 
 # Installation directory
-install_dir=${HOME}/Applications
+install_dir=${HOME}/Applications/amber
 
 # Extract the source archive
 if [ ! -f ${src_archive} ]
 then
-    echo 'Error: AmberTools${amb_version}.tar.bz2 source archive not found!'
+    echo 'Error: ${src_archive} source archive not found!'
     exit
 fi
 
@@ -84,17 +89,17 @@ then
     mkdir ${install_dir}
 fi
 cd ${install_dir}
-# tar -xjf ${src_archive}
+tar -xjf ${src_archive}
 
 # Set Environment Variables
-export AMBERHOME=${install_dir}/amber${amb_version}
+export AMBERHOME=${install_dir}/amber${amb_version}_src
 
 # Configure amber
-cd ${AMBERHOME}
-yes | ./configure gnu
+cd ${AMBERHOME}/build
+
 
 # Install amber
-source ${AMBERHOME}/amber.sh
+./run_cmake
 make install
 
 # Cleanup

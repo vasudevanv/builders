@@ -4,17 +4,24 @@ Compendia of bash scripts for compiling popular simulation/analysis
 codes (gromacs, lammps, ambertools, etc.). Scripts are provided for
 the following platforms:
 
-## CentOS (_centos7)
-A ``workstation`` flavor of CentOS 7 with the following 
-packages installed via yum
+## OpenSUSE (_opensuse)
+A ``Tumbleweed`` flavor of OpenSUSE with the following packages installed via
+zypper / yast
+
 * gcc-c++
 * gcc-gfortran
-* openmpi-devel
-* environment-modules
 * cmake
-* fftw
-* boost
-These scripts can easily be adapted to work with RHEL/Scientific Linux/Fedora systems.
+* fftw-devel
+* boost-devel
+* libbz2-devel
+* libXt-devel
+* python
+
+If you are on a system with MPI capabilities, you will also need
+* openmpi-devel
+
+These scripts can easily be adapted to work with RHEL/Fedora/Rocky linux
+systems.
 
 ## Mac OS X el Capitan (_mac_elcapitan)
 Xcode with commandline tools and Homebrew are installed along with the
